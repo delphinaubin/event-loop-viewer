@@ -1,22 +1,117 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <code-editor
+      v-model="content"
+      @init="editorInit"
+      lang="javascript"
+      theme="chrome"
+      width="700"
+      height="200"
+    ></code-editor>
+    <button
+      @click="playCode()"
+    >Play</button>
+    <event-loop
+      :queues="queues"
+    >
+    </event-loop>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import CodeEditor from 'vue2-ace-editor'
+import 'brace/ext/language_tools' //language extension prerequsite...
+import 'brace/mode/html'                
+import 'brace/mode/javascript'    //language
+import 'brace/mode/less'
+import 'brace/theme/chrome'
+import 'brace/snippets/javascript' //snippet
+import EventLoop from './components/EventLoop'
+import parseCode from './code-parser/code-parser'
+import { parse } from '@babel/parser'
+const geval = eval //Usefull to keep all declared var (in eval) in the same scope
 export default {
   name: 'app',
   components: {
-    HelloWorld
+    CodeEditor,
+    EventLoop,
+  },
+  data: () => ({
+    content: `console.log('yolo');\n\nsetTimeout(() => { console.log('timeout');}, 1000);\nfs.readFile('toto', (err, fileContent) => {\n  if(err) {\n    throw err;\n  }\n  console.log(fileContent);\n})\n\nfs.writeFile('file.txt', () => { console.log('file writed'); })`,
+    numberOfSelectedStatement: -1,
+    queues: {
+      timers: [],
+      io:[],
+    }
+  }),
+  methods: {
+    editorInit: () => {},
+    playCode: function(){
+      console.log(parse(this.content))
+      window._setTimeout = (line, code, time) => {
+        this.queues.timers.push({
+            instruction: 'setTimeout',
+            time,
+            execute: () => runCode(code, 0, line-1)
+          })
+      }
+      
+      window._fsReadFile = (line, code, time) => {
+        this.queues.io.push({
+            instruction: 'fs.readFile',
+            time,
+            execute: () => {
+              runCode(code, 0, line-1)
+              runCode(code, 1, line-2)
+              runCode(code, 2, line-3)
+            }
+          })
+      }
+      window._fsWriteFile = (line, code, time) => {
+        this.queues.io.push({
+            instruction: 'fs.writeFile',
+            time,
+            execute: () => {
+              runCode(code, 0, line-1)
+              runCode(code, 1, line-2)
+            }
+          })
+      }
+      window.require = () => {}
+      runCode(this.content, ++this.numberOfSelectedStatement)
+      
+    }
   }
 }
+
+function runCode(code, lineNumber, selectionDelta = 0) {
+  const lines = parseCode(code)    
+  const lineToSelect = lines[lineNumber]
+  console.log('lineToSelect', lineToSelect)
+  if(lineToSelect) {
+    lightCodeLines(lineToSelect.start + selectionDelta, lineToSelect.end + selectionDelta)
+    geval(lineToSelect.code)
+  }
+}
+function lightCodeLines(lineStart, lineEnd) {
+  const selectedLineElements = document.querySelectorAll('.selected-line')
+  selectedLineElements && Array.from(selectedLineElements).forEach(lineToUnselect => {
+    lineToUnselect.classList.remove('selected-line')
+  })
+  const lines = document.querySelectorAll('.ace_line')
+  for(let i=lineStart-1;i<=lineEnd-1 && i<=lines.length;i++) {
+    lines[i] && lines[i].classList.add('selected-line')
+  }
+}
+
 </script>
 
 <style>
+
+.selected-line {
+  background-color: #4F4;
+}
+
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
