@@ -6,7 +6,7 @@
       lang="javascript"
       theme="chrome"
       width="700"
-      height="200"
+      height="300"
     ></code-editor>
     <button
       @click="playCode()"
@@ -20,16 +20,14 @@
 
 <script>
 import CodeEditor from 'vue2-ace-editor'
-import 'brace/ext/language_tools' //language extension prerequsite...
-import 'brace/mode/html'                
-import 'brace/mode/javascript'    //language
-import 'brace/mode/less'
+import 'brace/ext/language_tools' // language extension prerequsite...
+import 'brace/mode/javascript'    // language
 import 'brace/theme/chrome'
-import 'brace/snippets/javascript' //snippet
+import 'brace/snippets/javascript' // snippet
 import EventLoop from './components/EventLoop'
 import parseCode from './code-parser/code-parser'
 import { parse } from '@babel/parser'
-const geval = eval //Usefull to keep all declared var (in eval) in the same scope
+const geval = eval // Usefull to keep all declared var (in eval) in the same scope
 export default {
   name: 'app',
   components: {
@@ -56,10 +54,9 @@ export default {
           })
       }
       
-      window._fsReadFile = (line, code, time) => {
+      window._fsReadFile = (line, code) => {
         this.queues.io.push({
             instruction: 'fs.readFile',
-            time,
             execute: () => {
               runCode(code, 0, line-1)
               runCode(code, 1, line-2)
@@ -67,10 +64,9 @@ export default {
             }
           })
       }
-      window._fsWriteFile = (line, code, time) => {
+      window._fsWriteFile = (line, code) => {
         this.queues.io.push({
             instruction: 'fs.writeFile',
-            time,
             execute: () => {
               runCode(code, 0, line-1)
               runCode(code, 1, line-2)
