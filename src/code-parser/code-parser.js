@@ -3,6 +3,7 @@ import DefaultStrategy from './parsing-strategies/default-strategy';
 import SetTimeoutStrategy from './parsing-strategies/settimeout-strategy'
 import FsWriteFileStrategy from './parsing-strategies/fs-writefile-strategy';
 import FsReadFileStrategy from './parsing-strategies/fs-readfile-strategy'
+import SetImmediateStrategy from './parsing-strategies/setimmediate-strategy';
 
 
 export default function parseCode(code) {
@@ -14,6 +15,7 @@ export default function parseCode(code) {
             new SetTimeoutStrategy(),
             new FsReadFileStrategy(),
             new FsWriteFileStrategy(),
+            new SetImmediateStrategy(),
             new DefaultStrategy(),
         ]
         const strategyToApply = strategies

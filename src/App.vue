@@ -35,11 +35,12 @@ export default {
     EventLoop,
   },
   data: () => ({
-    content: `console.log('yolo');\n\nsetTimeout(() => { console.log('timeout');}, 1000);\nfs.readFile('toto', (err, fileContent) => {\n  if(err) {\n    throw err;\n  }\n  console.log(fileContent);\n})\n\nfs.writeFile('file.txt', () => { console.log('file writed'); })`,
+    content: `console.log('yolo');\nsetImmediate(() => {console.log('immediate')});\nsetTimeout(() => { console.log('timeout');}, 1000);\nfs.readFile('toto', (err, fileContent) => {\n  if(err) {\n    throw err;\n  }\n  console.log(fileContent);\n})\n\nfs.writeFile('file.txt', () => { console.log('file writed'); })`,
     numberOfSelectedStatement: -1,
     queues: {
       timers: [],
       io:[],
+      immediates: [],
     }
   }),
   methods: {
@@ -50,6 +51,12 @@ export default {
         this.queues.timers.push({
             instruction: 'setTimeout',
             time,
+            execute: () => runCode(code, 0, line-1)
+          })
+      }
+      window._setImmediate = (line, code) => {
+        this.queues.immediates.push({
+            instruction: 'setImmediate',
             execute: () => runCode(code, 0, line-1)
           })
       }

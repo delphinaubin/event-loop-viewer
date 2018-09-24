@@ -16,7 +16,14 @@
                 </li>
             </ul>
         </div>
-        <div class="el-step immediates-step">Immediates</div>
+        <div class="el-step immediates-step">
+            Immediates
+            <ul>
+                <li v-for="(event, key) in queues.immediates" :key="key" @click="event.execute()">
+                    {{ event.instruction }}
+                </li>
+            </ul>
+        </div>
         <div class="el-step close-handler-step">Close Handler</div>
     </div>
 </template>
