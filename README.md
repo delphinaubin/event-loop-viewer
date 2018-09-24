@@ -1,5 +1,8 @@
 # event-loop-viewer
 
+This project is in progress..
+You probably should not use it.
+
 ## Project setup
 ```
 npm install
