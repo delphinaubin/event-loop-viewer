@@ -46,6 +46,7 @@ export default {
   methods: {
     editorInit: () => {},
     playCode: function(){
+      // eslint-disable-next-line no-console
       console.log(parse(this.content))
       window._setTimeout = (line, code, time) => {
         this.queues.timers.push({
@@ -90,6 +91,7 @@ export default {
 function runCode(code, lineNumber, selectionDelta = 0) {
   const lines = parseCode(code)    
   const lineToSelect = lines[lineNumber]
+  // eslint-disable-next-line no-console
   console.log('lineToSelect', lineToSelect)
   if(lineToSelect) {
     lightCodeLines(lineToSelect.start + selectionDelta, lineToSelect.end + selectionDelta)

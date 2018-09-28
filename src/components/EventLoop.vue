@@ -34,7 +34,7 @@
         props: ['queues'],
         computed: {
             sortedTimeEvents: function () {
-                return this.queues.timers.sort((t1, t2) => t2.time - t1.time)
+                return [].concat(this.queues.timers).sort((t1, t2) => t2.time - t1.time)
             }
         }
     }
