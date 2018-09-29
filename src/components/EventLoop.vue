@@ -1,7 +1,7 @@
 <template>
     <div class="el-container" >
         <div class="el-step time-step">
-            Time
+            <h2>Time</h2>
             <ul>
                 <li v-for="(event, key) in sortedTimeEvents" :key="key" @click="event.execute()">
                     {{ event.instruction }} {{ event.time }}
@@ -9,7 +9,7 @@
             </ul>
         </div>
         <div class="el-step io-step">
-            IO
+            <h2>IO</h2>
             <ul>
                 <li v-for="(event, key) in queues.io" :key="key" @click="event.execute()">
                     {{ event.instruction }} (takes 90ms)
@@ -17,14 +17,17 @@
             </ul>
         </div>
         <div class="el-step immediates-step">
-            Immediates
+            <h2>Immediates</h2>
             <ul>
                 <li v-for="(event, key) in queues.immediates" :key="key" @click="event.execute()">
                     {{ event.instruction }}
                 </li>
             </ul>
         </div>
-        <div class="el-step close-handler-step">Close Handler</div>
+        <div class="el-step close-handler-step">
+            <h2>Close Handler</h2>
+            <ul></ul>
+        </div>
     </div>
 </template>
 
@@ -43,9 +46,11 @@
 <style>
     .el-step {
         position: absolute;
+    }
+    .el-step ul {
         width: 15rem;
         height: 100px;
-        border: solid 2px red;
+        border: dashed 2px #88FF88;
     }
     .el-container {
         height: 600px;

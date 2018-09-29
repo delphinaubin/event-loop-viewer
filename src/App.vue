@@ -4,7 +4,7 @@
       v-model="content"
       @init="editorInit"
       lang="javascript"
-      theme="chrome"
+      theme="merbivore"
       width="700"
       height="300"
     ></code-editor>
@@ -22,7 +22,7 @@
 import CodeEditor from 'vue2-ace-editor'
 import 'brace/ext/language_tools' // language extension prerequsite...
 import 'brace/mode/javascript'    // language
-import 'brace/theme/chrome'
+import 'brace/theme/merbivore'
 import 'brace/snippets/javascript' // snippet
 import EventLoop from './components/EventLoop'
 import parseCode from './code-parser/code-parser'
@@ -113,8 +113,12 @@ function lightCodeLines(lineStart, lineEnd) {
 
 <style>
 
+body {
+  background-color: #222;
+}
+
 .selected-line {
-  background-color: #4F4;
+  background-color: #060;
 }
 
 #app {
@@ -122,7 +126,7 @@ function lightCodeLines(lineStart, lineEnd) {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  color: #FFF;
+  
 }
 </style>
