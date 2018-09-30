@@ -1,5 +1,10 @@
 <template>
     <div class="el-container" >
+        <h1>{{ currentTime }} ms</h1>
+        <img id="ela1" class="el-arrow" src="event-loop-arrow.svg" />
+        <img id="ela2" class="el-arrow" src="event-loop-arrow.svg" />
+        <img id="ela3" class="el-arrow" src="event-loop-arrow.svg" />
+        <img id="ela4" class="el-arrow" src="event-loop-arrow.svg" />
         <div class="el-step time-step">
             <h2>Time</h2>
             <ul>
@@ -34,7 +39,7 @@
 <script>
     export default {
         name: 'event-loop',
-        props: ['queues'],
+        props: ['queues', 'current-time'],
         computed: {
             sortedTimeEvents: function () {
                 return [].concat(this.queues.timers).sort((t1, t2) => t2.time - t1.time)
@@ -50,7 +55,12 @@
     .el-step ul {
         width: 15rem;
         height: 100px;
+        padding-top: 1rem;
         border: dashed 2px #88FF88;
+        list-style: none;
+        text-align: left;
+        color: #FFF;
+        font-family: 'Courier New', Courier, monospace;
     }
     .el-container {
         height: 600px;
@@ -73,4 +83,28 @@
         bottom: 0;
     }
 
+    .el-arrow {
+        position: absolute;
+        height: 10rem;
+    }
+    #ela1 {
+        top: 5rem;
+        left: 20rem;
+    }
+    #ela2 {
+        left: 20rem;
+        bottom: 5rem;
+        transform: rotate(-90deg);
+    }
+    
+    #ela3 {
+        top: 5rem;
+        right: 20rem;
+        transform: rotate(90deg);
+    }
+    #ela4 {
+        right: 20rem;
+        bottom: 5rem;
+        transform: rotate(180deg);   
+    }
 </style>

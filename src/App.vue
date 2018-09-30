@@ -13,6 +13,7 @@
     >Play</button>
     <event-loop
       :queues="queues"
+      :currentTime="currentTime"
     >
     </event-loop>
   </div>
@@ -27,6 +28,9 @@ import 'brace/snippets/javascript' // snippet
 import EventLoop from './components/EventLoop'
 import parseCode from './code-parser/code-parser'
 import { parse } from '@babel/parser'
+
+const NB_MS_PER_CODE_INSTRUCTION = 10
+
 const geval = eval // Usefull to keep all declared var (in eval) in the same scope
 export default {
   name: 'app',
@@ -41,7 +45,8 @@ export default {
       timers: [],
       io:[],
       immediates: [],
-    }
+    },
+    currentTime: 0,
   }),
   methods: {
     editorInit: () => {},
@@ -52,13 +57,13 @@ export default {
         this.queues.timers.push({
             instruction: 'setTimeout',
             time,
-            execute: () => runCode(code, 0, line-1)
+            execute: () => this.runCode(code, 0, line-1)
           })
       }
       window._setImmediate = (line, code) => {
         this.queues.immediates.push({
             instruction: 'setImmediate',
-            execute: () => runCode(code, 0, line-1)
+            execute: () => this.runCode(code, 0, line-1)
           })
       }
       
@@ -66,9 +71,9 @@ export default {
         this.queues.io.push({
             instruction: 'fs.readFile',
             execute: () => {
-              runCode(code, 0, line-1)
-              runCode(code, 1, line-2)
-              runCode(code, 2, line-3)
+              this.runCode(code, 0, line-1)
+              this.runCode(code, 1, line-2)
+              this.runCode(code, 2, line-3)
             }
           })
       }
@@ -76,28 +81,30 @@ export default {
         this.queues.io.push({
             instruction: 'fs.writeFile',
             execute: () => {
-              runCode(code, 0, line-1)
-              runCode(code, 1, line-2)
+              this.runCode(code, 0, line-1)
+              this.runCode(code, 1, line-2)
             }
           })
       }
       window.require = () => {}
-      runCode(this.content, ++this.numberOfSelectedStatement)
+      this.runCode(this.content, ++this.numberOfSelectedStatement)
       
-    }
+    },
+    runCode: function(code, lineNumber, selectionDelta = 0) {
+      this.currentTime += NB_MS_PER_CODE_INSTRUCTION
+      const lines = parseCode(code)    
+      const lineToSelect = lines[lineNumber]
+      // eslint-disable-next-line no-console
+      console.log('lineToSelect', lineToSelect)
+      if(lineToSelect) {
+        lightCodeLines(lineToSelect.start + selectionDelta, lineToSelect.end + selectionDelta)
+        geval(lineToSelect.code)
+      }
+  }
   }
 }
 
-function runCode(code, lineNumber, selectionDelta = 0) {
-  const lines = parseCode(code)    
-  const lineToSelect = lines[lineNumber]
-  // eslint-disable-next-line no-console
-  console.log('lineToSelect', lineToSelect)
-  if(lineToSelect) {
-    lightCodeLines(lineToSelect.start + selectionDelta, lineToSelect.end + selectionDelta)
-    geval(lineToSelect.code)
-  }
-}
+
 function lightCodeLines(lineStart, lineEnd) {
   const selectedLineElements = document.querySelectorAll('.selected-line')
   selectedLineElements && Array.from(selectedLineElements).forEach(lineToUnselect => {
